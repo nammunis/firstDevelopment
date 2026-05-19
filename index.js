@@ -1,10 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
-import Student from "./models/student.js";
-import studentRouter from "./routers/studentRouters.js";
 import userRouter from "./routers/userRouter.js";
 import jwt, { decode } from "jsonwebtoken";
+import productRouter from "./routers/productRouters.js";
 
 
 const app = express();
@@ -53,8 +52,8 @@ mongoose.connect(connectionString).then(
     }
 )
 
-app.use("/student",studentRouter)
 app.use('/user',userRouter)
+app.use('/products',productRouter)
 
 
 
@@ -64,7 +63,6 @@ app.delete('/',(req,res)=>{
         {message : 'Delete Request Done !'}
     )
 })
-
 
 
 app.listen(5000, ()=>{
