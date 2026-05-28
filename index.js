@@ -5,10 +5,13 @@ import userRouter from "./routers/userRouter.js";
 import jwt, { decode } from "jsonwebtoken";
 import productRouter from "./routers/productRouters.js";
 import dotenv from "dotenv"
+import cors from 'cors'
 dotenv.config()
 
 
 const app = express();
+
+app.use(cors()) // any request accept
 
 app.use(bodyParser.json())
 
