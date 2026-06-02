@@ -35,7 +35,7 @@ export async function getProducts(req,res) {
             const products = await Product.find()
             return res.json(products)
         }else{
-            const products = await Product.find({isAvaible: true})
+            const products = await Product.find({isAvailable: true})
             return res.json(products)
         }
         
@@ -49,39 +49,35 @@ export async function getProducts(req,res) {
     
 }
 
-
 export async function deleteProduct(req,res) {
     if(!isAdmin(req)){
         return res.status(403).json({
             message:'Access denied !'
         })
-        return
     }
     try {
 
         const productId = req.params.productId
 
-        await Product.deleteOne({
-            productId:productId
-        })
-
-        res.json({
-            message:'Product delete successfully'
+        const response = await Product.deleteOne({
+            _id: productId
         })
 
         if(response.deletedCount===0){
-            res.status(404).json({
+            return res.status(404).json({
                 message:'product not found'
             })
-            return
         }
+
+        return res.json({
+            message:'Product delete successfully'
+        })
         
     } catch (error) {
         console.error('Error deleting product',error)
-        res.status(500).json({
+        return res.status(500).json({
             message:'Faild to delete product'
         })
-        return
     }
 }
 
@@ -97,12 +93,11 @@ export async function updateProduct(req,res) {
 
     const data = req.body;
     const productId = req.params.productId
-    data.productId = productId
     
     try {
         await Product.updateOne(
             {
-                productId:productId,
+                _id: productId,
             },
             data
         )
