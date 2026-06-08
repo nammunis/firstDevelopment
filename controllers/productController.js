@@ -118,7 +118,11 @@ export async function updateProduct(req,res) {
 export async function getProductInfo(req,res) {
     try {
     const productId = req.params.productId
-    const product = await Product.findOne({productId:productId})
+    const product = await Product.findOne({ productId: productId });
+
+        console.log(productId);
+        console.log(product);
+
     if(product==null){
         res.status(404).json({
             message:'Product not found'
@@ -127,7 +131,7 @@ export async function getProductInfo(req,res) {
         }if(isAdmin(req)){
             res.json(product)
         }else{
-            if(product.isAvaible){
+            if(product.isAvailable){
                 res.json(product)
             }else{
                 res.status(404).json({
