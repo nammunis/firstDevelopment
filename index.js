@@ -6,6 +6,7 @@ import jwt, { decode } from "jsonwebtoken";
 import productRouter from "./routers/productRouters.js";
 import dotenv from "dotenv"
 import cors from 'cors'
+import orderRouter from "./routers/orderRouter.js";
 dotenv.config()
 
 
@@ -59,6 +60,7 @@ mongoose.connect(connectionString).then(
 
 app.use('/user',userRouter)
 app.use('/products',productRouter)
+app.use('/orders',orderRouter)
 
 
 
