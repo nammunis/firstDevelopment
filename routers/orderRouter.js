@@ -5,6 +5,6 @@ const orderRouter = express.Router()
 
 
 orderRouter.post('/',creatOrder)
-orderRouter.get('/',getOrders)
+orderRouter.get('/:page/:limit',getOrders)
 
 export default orderRouter
