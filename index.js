@@ -2,82 +2,65 @@ import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import userRouter from "./routers/userRouter.js";
-import jwt, { decode } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import productRouter from "./routers/productRouters.js";
-import dotenv from "dotenv"
-import cors from 'cors'
+import dotenv from "dotenv";
+import cors from 'cors';
 import orderRouter from "./routers/orderRouter.js";
-dotenv.config()
-
+dotenv.config();
 
 const app = express();
 
-app.use(cors()) // any request accept
+app.use(cors());
 
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(express.json());
 
-//Middle Way 
-app.use(
-    (req,res,next)=>{
-        const value = req.header("Authorization")
+app.use((req, res, next) => {
+    const value = req.header("Authorization");
 
-        if(value!=null){
-            const token = value.replace("Bearer ","")
-            jwt.verify(token,
-                process.env.JWT_SECRET,
-                (err,decode)=>{
-                    if(decode== null){
-                        res.status(403).json({
-                            message:'Unauthorized'
-                        })
-                    }else{
-                        req.user = decode
-                        next()
-                    }
-                    
-            })
-        }else{
-            next()
-        }
-       
+    if (value != null && value.startsWith("Bearer ")) {
+        const token = value.replace("Bearer ", "");
+
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err || !decoded) {
+                return res.status(403).json({
+                    message: 'Unauthorized or Token Expired'
+                });
+            } else {
+                req.user = decoded;
+                next();
+            }
+        });
+    } else {
+        next();
     }
-)
+});
 
-
-
-const connectionString = process.env.MONGO_URL
+const connectionString = process.env.MONGO_URL;
 
 mongoose.connect(connectionString).then(
-    ()=>{
-        console.log('Database Connected !✅')
+    () => {
+        console.log('Database Connected !✅');
     }
 ).catch(
-    (err)=>{
-        console.log('Database Connected Failed ❌')
+    (err) => {
+        console.log('Database Connected Failed ❌');
         console.error(err);
     }
-)
+);
 
-app.use('/user',userRouter)
-app.use('/products',productRouter)
-app.use('/orders',orderRouter)
+app.use('/user', userRouter);
+app.use('/products', productRouter);
+app.use('/orders', orderRouter);
 
-
-
-app.delete('/',(req,res)=>{
-    console.log('This Is Delete Request')
-    res.json(
-        {message : 'Delete Request Done !'}
-    )
-})
+app.delete('/', (req, res) => {
+    console.log('This Is Delete Request');
+    res.json({ message: 'Delete Request Done !' });
+});
 
 const PORT = 5000;
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Backend server running on port ${PORT}`);
 });
-
-
-/*app.listen(5000, ()=>{
-    console.log('Server Started! 🌐')
-})*/
