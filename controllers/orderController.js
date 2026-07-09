@@ -1,5 +1,6 @@
 import Order from "../models/order.js";
 import Product from "../models/product.js";
+import { hasManagementAccess } from "./userController.js";
 
 export async function creatOrder(req, res) {
     try {
@@ -43,7 +44,7 @@ export async function creatOrder(req, res) {
 
                 items[i] = {
                     productId: product.productId,
-                    name: product.name || item.name || "Product",
+                    name: product.productName || item.name || "Product",
                     image: product.images && product.images.length > 0 ? product.images[0] : "no-image.jpg",
                     price: product.price.toString(),
                     qty: itemQty,
@@ -126,21 +127,39 @@ export async function getOrders(req, res) {
 
 export function updateOrder(req, res) {
     try {
-        if (req.user && (req.user.role === 'admin' || req.user.isAdmin === true || req.user.type === 'admin')) {
+        if (req.user && hasManagementAccess(req)) {
             const orderId = req.params.orderId;
             const body = req.body || {};
-            const status = body.status;
-            const notes = body.notes;
 
-            if (!status) {
+            // Build update object with allowed fields
+            const updateData = {};
+
+            if (body.status) {
+                updateData.status = body.status;
+            }
+            if (body.notes) {
+                updateData.notes = body.notes;
+            }
+            if (body.review) {
+                updateData.review = body.review;
+            }
+            if (body.rating) {
+                updateData.rating = body.rating;
+            }
+            if (body.approval) {
+                updateData.approval = body.approval;
+            }
+
+            // At least one field must be provided
+            if (Object.keys(updateData).length === 0) {
                 return res.status(400).json({
-                    message: "Status is required"
+                    message: "At least one field (status, notes, review, rating, approval) is required"
                 });
             }
 
             Order.findOneAndUpdate(
                 { orderId: orderId },
-                { status: status, notes: notes },
+                updateData,
                 { new: true }
             )
                 .then((updatedOrder) => {

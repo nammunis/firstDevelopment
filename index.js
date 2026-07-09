@@ -7,6 +7,8 @@ import productRouter from "./routers/productRouters.js";
 import dotenv from "dotenv";
 import cors from 'cors';
 import orderRouter from "./routers/orderRouter.js";
+import dashboardRouter from "./routers/dashboardRouter.js";
+import reviewRouter from "./routers/reviewRouter.js";
 dotenv.config();
 
 const app = express();
@@ -51,8 +53,10 @@ mongoose.connect(connectionString).then(
 );
 
 app.use('/user', userRouter);
-app.use('/products', productRouter);
-app.use('/orders', orderRouter);
+app.use('/api/products', productRouter);
+app.use('/api/orders', orderRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/reviews', reviewRouter);
 
 app.delete('/', (req, res) => {
     console.log('This Is Delete Request');
