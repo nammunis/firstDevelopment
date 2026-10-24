@@ -131,7 +131,6 @@ export function updateOrder(req, res) {
             const orderId = req.params.orderId;
             const body = req.body || {};
 
-            // Build update object with allowed fields
             const updateData = {};
 
             if (body.status) {

@@ -8,7 +8,6 @@ import OTP from "../models/otp.js";
 
 dotenv.config();
 
-// Transporter configuration using environment variables
 const smtpPort = Number(process.env.SMTP_PORT || 587);
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -16,21 +15,18 @@ const transporter = nodemailer.createTransport({
     secure: smtpPort === 465,
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // Pass app password via .env file
+        pass: process.env.EMAIL_PASS,
     },
 });
 
-// Helper function to check admin rights
 export function isAdmin(req) {
     return req.user?.role === "admin";
 }
 
-// Helper function to check if user has management access (admin or manager)
 export function hasManagementAccess(req) {
     return req.user?.role === "admin" || req.user?.role === "manager";
 }
 
-// Get all users (Admin only)
 export async function getAllUsers(req, res) {
     try {
         if (!isAdmin(req)) {
@@ -49,7 +45,6 @@ export async function getAllUsers(req, res) {
     }
 }
 
-// Update user role (Admin only)
 export async function updateUserRole(req, res) {
     try {
         if (!isAdmin(req)) {
@@ -68,7 +63,6 @@ export async function updateUserRole(req, res) {
             });
         }
 
-        // Prevent self-demotion
         if (req.user._id.toString() === userId && role !== 'admin') {
             return res.status(400).json({
                 message: 'Cannot demote yourself. Please ask another admin.'
@@ -99,7 +93,6 @@ export async function updateUserRole(req, res) {
     }
 }
 
-// Block/Unblock user (Admin only)
 export async function toggleUserBlock(req, res) {
     try {
         if (!isAdmin(req)) {
@@ -132,7 +125,6 @@ export async function toggleUserBlock(req, res) {
     }
 }
 
-// 1. Create User
 export async function createUser(req, res) {
     try {
         const passwordHash = await bcrypt.hash(req.body.password, 10);
@@ -152,7 +144,6 @@ export async function createUser(req, res) {
     }
 }
 
-// 2. Login User
 export async function loginUser(req, res) {
     try {
         const { email, password } = req.body;
@@ -195,7 +186,6 @@ export async function loginUser(req, res) {
     }
 }
 
-// 3. Get Current User Profile
 export async function getUser(req, res) {
     try {
         if (!req.user) {
@@ -224,7 +214,7 @@ export async function getUser(req, res) {
         });
     }
 }
-// 4. Google Login
+
 export async function googleLogin(req, res) {
     const googleToken = req.body.token;
 
@@ -283,7 +273,6 @@ export async function googleLogin(req, res) {
     }
 }
 
-// 5. Send OTP
 export async function sendOTP(req, res) {
     const { email } = req.body;
     const otpCode = String(Math.floor(100000 + Math.random() * 900000));
@@ -338,7 +327,6 @@ export async function sendOTP(req, res) {
     }
 }
 
-// Verify email with OTP for logged-in user
 export async function verifyEmailWithOTP(req, res) {
     try {
         if (!req.user) {
@@ -393,7 +381,6 @@ export async function verifyEmailWithOTP(req, res) {
     }
 }
 
-// 6. Reset Password
 export async function resetPassword(req, res) {
     const { email, newPassword, otp } = req.body;
 
@@ -421,20 +408,15 @@ export async function resetPassword(req, res) {
     }
 }
 
-// 7. Make User Admin (for development/setup)
 export async function makeUserAdmin(req, res) {
     const { email } = req.body;
 
     try {
-        // Check if user exists first
         const userToPromote = await User.findOne({ email: email.toLowerCase() });
         if (!userToPromote) {
             return res.status(404).json({ message: "User not found!" });
         }
 
-        // Allow promotion if:
-        // 1. Requester is already admin, OR
-        // 2. There are no admins yet (bootstrap first admin)
         const adminCount = await User.countDocuments({ role: "admin" });
 
         if (adminCount > 0 && !isAdmin(req)) {
@@ -454,7 +436,6 @@ export async function makeUserAdmin(req, res) {
     }
 }
 
-// 8. Update User Status (Block/Unblock - Admin only)
 export async function updateUserStatus(req, res) {
     try {
         if (!isAdmin(req)) {
@@ -485,7 +466,6 @@ export async function updateUserStatus(req, res) {
     }
 }
 
-// 10. Update User Profile (Admin only)
 export async function updateUser(req, res) {
     try {
         if (!isAdmin(req)) {
@@ -522,7 +502,6 @@ export async function updateUser(req, res) {
     }
 }
 
-// 10.5 Update User Profile (User can update their own profile)
 export async function updateUserProfile(req, res) {
     try {
         if (!req.user) {
@@ -559,7 +538,6 @@ export async function updateUserProfile(req, res) {
     }
 }
 
-// 11. Delete User (Admin only)
 export async function deleteUser(req, res) {
     try {
         if (!isAdmin(req)) {

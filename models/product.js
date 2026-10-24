@@ -40,7 +40,7 @@ const productSchema = mongoose.Schema(
             type: Boolean,
             default: true
         },
-        catagory: {
+        category: {
             type: String,
             required: true,
             default: 'Uncategorised'

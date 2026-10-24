@@ -9,6 +9,7 @@ import cors from 'cors';
 import orderRouter from "./routers/orderRouter.js";
 import dashboardRouter from "./routers/dashboardRouter.js";
 import reviewRouter from "./routers/reviewRouter.js";
+import Category from "./routers/categoryRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -57,6 +58,7 @@ app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/reviews', reviewRouter);
+app.use('/api/categories', Category);
 
 app.delete('/', (req, res) => {
     console.log('This Is Delete Request');

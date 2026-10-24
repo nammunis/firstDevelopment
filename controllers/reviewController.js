@@ -2,7 +2,6 @@ import { Review } from "../models/review.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-// Get all reviews (public)
 export async function getAllReviews(req, res) {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -30,7 +29,6 @@ export async function getAllReviews(req, res) {
     }
 }
 
-// Get reviews of currently logged-in user
 export async function getMyReviews(req, res) {
     try {
         const token = req.headers.authorization?.split(" ")[1];
@@ -53,7 +51,6 @@ export async function getMyReviews(req, res) {
     }
 }
 
-// Add a review for an order
 export async function addReview(req, res) {
     try {
         const token = req.headers.authorization?.split(" ")[1];
@@ -104,7 +101,6 @@ export async function addReview(req, res) {
     }
 }
 
-// Get reviews for a product
 export async function getProductReviews(req, res) {
     try {
         const { productId } = req.params;
@@ -117,7 +113,6 @@ export async function getProductReviews(req, res) {
     }
 }
 
-// Get reviews for an order
 export async function getOrderReviews(req, res) {
     try {
         const { orderId } = req.params;
@@ -130,7 +125,6 @@ export async function getOrderReviews(req, res) {
     }
 }
 
-// Update order status (admin approval/rejection)
 export async function updateOrderStatus(req, res) {
     try {
         const token = req.headers.authorization?.split(" ")[1];
@@ -155,7 +149,6 @@ export async function updateOrderStatus(req, res) {
             return res.status(400).json({ error: "Invalid status" });
         }
 
-        // This will be handled by the order controller - just return for now
         return res.status(200).json({ message: "Status update placeholder" });
     } catch (err) {
         console.error(err);
@@ -163,7 +156,6 @@ export async function updateOrderStatus(req, res) {
     }
 }
 
-// Moderate a review (admin only)
 export async function moderateReview(req, res) {
     try {
         const token = req.headers.authorization?.split(" ")[1];
